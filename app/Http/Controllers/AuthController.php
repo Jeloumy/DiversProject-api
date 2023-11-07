@@ -85,4 +85,32 @@ class AuthController extends Controller
             'message'=>"Utilisateur supprimé"
         ]);
     }
+
+    public function updateProfile(Request $request)
+    {
+        $user = auth()->user();
+        $user->name = $request->input('name');
+        $user->save();
+
+        return response()->json($user);
+    }
+
+    public function updatePassword(Request $request)
+    {
+        $request->validate([
+            'password' => [
+                'string',
+                Password::min(8)
+                    ->mixedCase()
+                    ->numbers()
+                    ->uncompromised()
+            ]
+        ]);
+
+        $user = Auth::user();
+        $user->password = Hash::make($request->input('password'));
+        $user->save();
+
+        return response()->json(['message' => 'Mot de passe mis à jour avec succès']);
+    }
 }
