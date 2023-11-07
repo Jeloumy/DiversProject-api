@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Team;
+use App\Models\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
@@ -62,6 +63,29 @@ class TeamController extends Controller
      */
     public function destroy(Team $team)
     {
-        //
+        $team->delete();
+
+        return response()->json([
+            'message'=>"Team supprimé"
+        ]);
     }
+
+    public function addUser(Request $request, Team $team)
+    {
+        $request->validate([
+            'user_id' => 'required|integer|exists:users,id',
+        ]);
+
+        $user = User::find($request->input('user_id'));
+
+        if ($user) {
+            $user->team_id = $team->id;
+            $user->save();
+
+            return response()->json(['message' => 'Utilisateur ajouté à l\'équipe avec succès'], 200);
+        } else {
+            return response()->json(['message' => 'Utilisateur non trouvé'], 404);
+        }
+    }
+
 }

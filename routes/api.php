@@ -80,5 +80,5 @@ Route::group(['middleware'=>'auth:sanctum', 'prefix'=> "team"],function () {
     Route::get('/{team}', [TeamController::class, 'show']);
     Route::put('/{team}', [TeamController::class, 'update']);
     Route::delete('/{team}', [TeamController::class, 'destroy']);
-    Route::get('search/{searchQuery}', [TeamController::class, 'search']);
+    Route::post('/{team}/add-user', [TeamController::class, 'addUser']);
 });
