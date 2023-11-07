@@ -13,6 +13,9 @@ class Jeu extends Model
         'name',
     ];
 
+    protected $table = 'jeux';
+
+
     public function tournois()
     {
         return $this->hasMany(Tournoi::class);

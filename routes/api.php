@@ -60,6 +60,7 @@ Route::group(['middleware'=>'auth:sanctum', 'prefix'=> "tournoi"],function () {
     Route::get('/{tournoi}', [TournoiController::class, 'show']);
     Route::put('/{tournoi}', [TournoiController::class, 'update']);
     Route::delete('/{tournoi}', [TournoiController::class, 'destroy']);
+    Route::get('search/{searchQuery}', [TournoiController::class, 'search']);
 });
 
 

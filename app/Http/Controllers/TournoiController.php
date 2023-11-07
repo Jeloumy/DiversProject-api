@@ -74,4 +74,18 @@ class TournoiController extends Controller
             'message'=>"Tournoi supprimé"
         ]);
     }
+
+    public function search($searchQuery)
+    {
+
+
+        $results = Tournoi::where('name', 'like', '%' . $searchQuery . '%')
+            ->orWhereHas('jeu', function ($query) use ($searchQuery) {
+                $query->where('name', 'like', '%' . $searchQuery . '%');
+            })
+            ->get();
+
+        return response()->json($results);
+    }
+
 }
