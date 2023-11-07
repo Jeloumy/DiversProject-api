@@ -53,14 +53,15 @@ Route::get('/profile', 'ProfileController@index')->name('profile');
 /////////////////////////////////////// route tournois /////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+Route::get('/tournoi', [TournoiController::class, 'index']);
 
-Route::group(['prefix'=> 'tournoi'], function (){
-   Route::get('/', TournoiController::class, 'index');
-   Route::post('/', TournoiController::class, 'store');
-   Route::get('/{tournoi}', TournoiController::class, 'show');
-   Route::put('/{tournoi}', TournoiController::class, 'update');
-   Route::delete('/{tournoi}', TournoiController::class, 'destroy');
+Route::group(['middleware'=>'auth:sanctum', 'prefix'=> "tournoi"],function () {
+    Route::post('/', [TournoiController::class, 'store']);
+    Route::get('/{tournoi}', [TournoiController::class, 'show']);
+    Route::put('/{tournoi}', [TournoiController::class, 'update']);
+    Route::delete('/{tournoi}', [TournoiController::class, 'destroy']);
 });
+
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -23,9 +23,9 @@ class AuthController extends Controller
                     'required',
                     'string',
                     Password::min(8)
-                    ->mixedCase()
-                    ->numbers()
-                    ->uncompromised()
+                        ->mixedCase()
+                        ->numbers()
+                        ->uncompromised()
 
                 ]
             ]
@@ -52,7 +52,7 @@ class AuthController extends Controller
         ]);
 
         $user = User::where('email', $request->input('email'))
-        ->first();
+            ->first();
 
         if($user && Hash::check($request->input('password'), $user->password)){
 
@@ -64,7 +64,7 @@ class AuthController extends Controller
             ];
         }
         return response()->json([
-            'message' =>'identifiant ou mot de passe incorrecte'
+            'message' =>'identifiant ou mot de passe incorrect'
         ], 400);
     }
 
@@ -76,6 +76,4 @@ class AuthController extends Controller
             'message'=>"Vous êtes déconnecté"
         ]);
     }
-
-
 }

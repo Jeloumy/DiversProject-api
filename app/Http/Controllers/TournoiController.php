@@ -13,7 +13,8 @@ class TournoiController extends Controller
      */
     public function index()
     {
-        //
+        $tournois = Tournoi::all();
+        return $tournois;
     }
 
     /**
@@ -21,7 +22,19 @@ class TournoiController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $data = $request->validate([
+            'name' => 'required|string',
+            'description' => 'nullable|string',
+            'begin_date' => 'required|date',
+            'end_date' => 'required|date',
+            'jeu_id' => 'required|exists:jeux,id',
+        ]);
+
+        $data['user_id'] = auth()->id();
+
+        $tournoi = Tournoi::create($data);
+
+        return $tournoi;
     }
 
     /**
@@ -37,7 +50,7 @@ class TournoiController extends Controller
      */
     public function update(Request $request, Tournoi $tournoi)
     {
-        //
+
     }
 
     /**

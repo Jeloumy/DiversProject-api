@@ -14,6 +14,8 @@ class Tournoi extends Model
         'description',
         'begin_date',
         'end_date',
+        'user_id',
+        'jeu_id'
     ];
 
     public function jeu()
