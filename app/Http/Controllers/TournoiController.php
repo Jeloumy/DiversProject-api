@@ -50,7 +50,17 @@ class TournoiController extends Controller
      */
     public function update(Request $request, Tournoi $tournoi)
     {
+        $data = $request->validate([
+            'name' => 'string',
+            'description' => 'string',
+            'begin_date' => 'date',
+            'end_date' => 'date',
+            'jeu_id' => 'exists:jeux,id',
+        ]);
 
+        $tournoi->update($data);
+
+        return $tournoi;
     }
 
     /**
@@ -58,6 +68,10 @@ class TournoiController extends Controller
      */
     public function destroy(Tournoi $tournoi)
     {
-        //
+        $tournoi->delete();
+
+        return response()->json([
+            'message'=>"Tournoi supprimé"
+        ]);
     }
 }
