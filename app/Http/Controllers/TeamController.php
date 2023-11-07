@@ -38,7 +38,7 @@ class TeamController extends Controller
      */
     public function show(Team $team)
     {
-        //
+        return $team;
     }
 
     /**
@@ -46,7 +46,15 @@ class TeamController extends Controller
      */
     public function update(Request $request, Team $team)
     {
-        //
+        $data = $request->validate([
+            'name' => 'string',
+            'description' => 'string',
+            'logo' => 'string',
+        ]);
+
+        $team->update($data);
+
+        return $team;
     }
 
     /**
