@@ -30,7 +30,8 @@ class TeamController extends Controller
         ]);
 
         $team = Team::create($data);
-
+        $team->captain_id = auth()->user()->id;
+        $team->save();
         return $team;
     }
 
@@ -47,6 +48,11 @@ class TeamController extends Controller
      */
     public function update(Request $request, Team $team)
     {
+
+        if ($team->captain_id !== auth()->user()->id) {
+            return response()->json(['message' => 'Vous n\'êtes pas le capitaine de l\'équipe.'], 403);
+        }
+
         $data = $request->validate([
             'name' => 'string',
             'description' => 'string',
