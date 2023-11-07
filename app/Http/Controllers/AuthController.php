@@ -76,4 +76,13 @@ class AuthController extends Controller
             'message'=>"Vous êtes déconnecté"
         ]);
     }
+
+    public function destroy(User $user)
+    {
+        $user->delete();
+
+        return response()->json([
+            'message'=>"Utilisateur supprimé"
+        ]);
+    }
 }

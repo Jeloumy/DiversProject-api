@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\TournoiController;
+use App\Http\Controllers\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful;
@@ -34,8 +35,9 @@ Route::group(['prefix'=>'blog'], function (){
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 Route::group(['prefix'=>'auth'], function (){
-    Route::post('/register', [\App\Http\Controllers\AuthController::class, 'register']);
-    Route::post('/login', [\App\Http\Controllers\AuthController::class, 'login']);
+    Route::post('/register', [AuthController::class, 'register']);
+    Route::post('/login', [AuthController::class, 'login']);
+    Route::delete('/{user}', [AuthController::class, 'destroy']);
 
     Route::group(['middleware'=>'auth:sanctum'], function (){
         Route::get('/logout', [\App\Http\Controllers\AuthController::class, 'logout']);
