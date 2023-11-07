@@ -87,5 +87,4 @@ class TeamController extends Controller
             return response()->json(['message' => 'Utilisateur non trouvé'], 404);
         }
     }
-
 }
