@@ -77,7 +77,7 @@ Route::get('/team', [TeamController::class, 'index']);
 
 Route::group(['middleware'=>'auth:sanctum', 'prefix'=> "team"],function () {
     Route::post('/', [TeamController::class, 'store']);
-    Route::get('/{team}', [TeamController::class, 'show']);s
+    Route::get('/{team}', [TeamController::class, 'show']);
     Route::put('/{team}', [TeamController::class, 'update']);
     Route::delete('/{team}', [TeamController::class, 'destroy']);
     Route::get('search/{searchQuery}', [TeamController::class, 'search']);
