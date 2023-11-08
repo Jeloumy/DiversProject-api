@@ -13,7 +13,8 @@ class JeuController extends Controller
      */
     public function index()
     {
-        //
+        $jeu = Jeu::all();
+        return $jeu;
     }
 
     /**
@@ -21,7 +22,14 @@ class JeuController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $data = $request->validate([
+            'name' => 'required|string',
+            'image' => 'required|string',
+        ]);
+
+        $jeu = Jeu::create($data);
+        $jeu->save();
+        return $jeu;
     }
 
     /**
@@ -29,7 +37,7 @@ class JeuController extends Controller
      */
     public function show(Jeu $jeu)
     {
-        //
+        return $jeu;
     }
 
     /**
@@ -37,7 +45,14 @@ class JeuController extends Controller
      */
     public function update(Request $request, Jeu $jeu)
     {
-        //
+
+        $data = $request->validate([
+            'name' => 'string',
+            'logo' => 'string',
+        ]);
+
+        $jeu->update($data);
+        return $jeu;
     }
 
     /**
@@ -45,6 +60,10 @@ class JeuController extends Controller
      */
     public function destroy(Jeu $jeu)
     {
-        //
+        $jeu->delete();
+
+        return response()->json([
+            'message'=>"Jeu supprimé"
+        ]);
     }
 }
