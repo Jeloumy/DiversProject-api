@@ -19,6 +19,7 @@ class AuthController extends Controller
             [
                 'name' => 'string | required',
                 'email' => 'email | required|unique:users,email',
+                'pseudo' => 'required|string|unique:users',
                 'password' => [
                     'required',
                     'string',
@@ -35,6 +36,7 @@ class AuthController extends Controller
         $user->name = $request->input('name');
         $user->email = $request->input('email');
         $user->password = $request->input('password');
+        $user->pseudo = $request->input('pseudo');
         $user->save();
 
         $token = $user->createToken("teste");
