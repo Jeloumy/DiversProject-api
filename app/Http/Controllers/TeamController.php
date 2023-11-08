@@ -93,4 +93,26 @@ class TeamController extends Controller
             return response()->json(['message' => 'Utilisateur non trouvé'], 404);
         }
     }
+
+    public function setCaptain(Request $request, Team $team, User $newCaptain)
+    {
+        // Vérifie si l'utilisateur actuel est le capitaine de l'équipe
+        if ($team->captain_id !== auth()->user()->id) {
+            return response()->json(['message' => 'Vous n\'êtes pas le capitaine de l\'équipe.'], 403);
+        }
+
+        $team->load('users');
+        //dd($team->users);
+        // Vérifie si le nouvel utilisateur est membre de l'équipe
+        if (!$team->users()->whereId($newCaptain->id)) {
+
+            return response()->json(['message' => 'Cet utilisateur n\'est pas membre de l\'équipe.'], 400);
+        }
+
+        // Met à jour le capitaine
+        $team->captain_id = $newCaptain->id;
+        $team->save();
+
+        return response()->json(['message' => 'Le nouveau capitaine a été défini avec succès.']);
+    }
 }

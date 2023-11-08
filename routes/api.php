@@ -81,4 +81,5 @@ Route::group(['middleware'=>'auth:sanctum', 'prefix'=> "team"],function () {
     Route::put('/{team}', [TeamController::class, 'update']);
     Route::delete('/{team}', [TeamController::class, 'destroy']);
     Route::post('/{team}/add-user', [TeamController::class, 'addUser']);
+    Route::put('/{team}/set-captain', [TeamController::class, 'setCaptain']);
 });
