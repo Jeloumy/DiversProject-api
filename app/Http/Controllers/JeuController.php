@@ -4,6 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Jeu;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Intervention\Image\Facades\Image;
+
+
 
 class JeuController extends Controller
 {
@@ -23,11 +27,18 @@ class JeuController extends Controller
     {
         $data = $request->validate([
             'name' => 'required|string',
-            'image' => 'required|string',
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
         $jeu = Jeu::create($data);
         $jeu->save();
+
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $jeu = Jeu::create($data);
+            $jeu = self::storeImage($image, $jeu);
+            return $jeu;
+        }
         return $jeu;
     }
 
@@ -65,4 +76,20 @@ class JeuController extends Controller
             'message'=>"Jeu supprimé"
         ]);
     }
+
+    static function storeImage($image, $jeu){
+        $resizedImage = Image::make($image)
+            ->resize(256, null, function($constraint){
+                $constraint->aspectRatio();
+            })
+            ->crop(256,256);
+
+        $path ='jeu/' . time(). '-' . $jeu->id . '.' . $image->getClientOriginalExtension();
+        Storage::disk('public')->put($path, (string) $resizedImage->encode());
+
+        $jeu->update(['image' => $path]);
+
+        return $jeu;
+    }
+
 }

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Casts\RelativeUrlCast;
 
 class Jeu extends Model
 {
@@ -12,6 +13,10 @@ class Jeu extends Model
     protected $fillable = [
         'name',
         'image',
+    ];
+
+    protected $casts = [
+        'image'=>RelativeUrlCast::class,
     ];
 
     protected $table = 'jeux';
