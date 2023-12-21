@@ -31,14 +31,12 @@ class JeuController extends Controller
         ]);
 
         $jeu = Jeu::create($data);
-        $jeu->save();
 
         if ($request->hasFile('image')) {
             $image = $request->file('image');
-            $jeu = Jeu::create($data);
             $jeu = self::storeImage($image, $jeu);
-            return $jeu;
         }
+        $jeu->save();
         return $jeu;
     }
 
@@ -87,7 +85,7 @@ class JeuController extends Controller
         $path ='jeu/' . time(). '-' . $jeu->id . '.' . $image->getClientOriginalExtension();
         Storage::disk('public')->put($path, (string) $resizedImage->encode());
 
-        $jeu->update(['image' => $path]);
+        $jeu->image = $path;
 
         return $jeu;
     }
