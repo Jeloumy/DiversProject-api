@@ -46,9 +46,14 @@ class SocialiteController extends Controller
                 'name' => $name
             ]);
 
-            $token = $user->createToken("teste");
+            // Création du token
+            $tokenResult = $user->createToken("teste");
+            $token = $tokenResult->plainTextToken; // Obtention du token en tant que chaîne de caractères
 
-            return ['token' => $token->plainTextToken];
+            // Construction de l'URL de redirection avec le token
+            $redirectUrl = env('FRONTEND_URL') . '?token=' . $token;
+
+            return redirect($redirectUrl);
 
         }
         abort(404);

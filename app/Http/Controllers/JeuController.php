@@ -32,6 +32,7 @@ class JeuController extends Controller
 
         $jeu = Jeu::create($data);
 
+
         if ($request->hasFile('image')) {
             $image = $request->file('image');
             $jeu = self::storeImage($image, $jeu);
