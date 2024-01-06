@@ -12,10 +12,10 @@ class SocialiteController extends Controller
     // Les tableaux des providers autorisés
     protected $providers = [ "google", "github", "facebook" ];
 
-    # La vue pour les liens vers les providers
-    public function loginRegister () {
-        return view("socialite.login-register");
-    }
+   // # La vue pour les liens vers les providers
+    //public function loginRegister () {
+    //    return view("socialite.login-register");
+    //}
 
     # redirection vers le provider
     public function redirect ($provider) {
@@ -46,9 +46,14 @@ class SocialiteController extends Controller
                 'name' => $name
             ]);
 
-            $token = $user->createToken("teste");
+            // Création du token
+            $tokenResult = $user->createToken("teste");
+            $token = $tokenResult->plainTextToken; // Obtention du token en tant que chaîne de caractères
 
-            return ['token' => $token->plainTextToken];
+            // Construction de l'URL de redirection avec le token
+            $redirectUrl = env('FRONTEND_URL') . '?token=' . $token;
+
+            return redirect($redirectUrl);
 
         }
         abort(404);
