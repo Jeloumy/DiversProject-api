@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Casts\RelativeUrlCast;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Jeu extends Model
 {
@@ -22,7 +23,7 @@ class Jeu extends Model
     protected $table = 'jeux';
 
 
-    public function tournois()
+    public function tournoi() : hasMany
     {
         return $this->hasMany(Tournoi::class);
     }
