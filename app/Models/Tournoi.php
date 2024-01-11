@@ -17,7 +17,8 @@ class Tournoi extends Model
         'begin_date',
         'end_date',
         'user_id',
-        'jeu_id'
+        'jeu_id',
+        'stream_url',
     ];
 
     public function jeu(): belongsTo
