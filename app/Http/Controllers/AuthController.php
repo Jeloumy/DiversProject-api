@@ -16,6 +16,7 @@ class AuthController extends Controller
         $request->validate(
             [
                 'name' => 'string | required',
+                'last_name' => 'string|required',
                 'email' => 'email | required|unique:users,email',
                 'pseudo' => 'required|string|unique:users',
                 'password' => [
@@ -32,17 +33,19 @@ class AuthController extends Controller
 
         $user = new User;
         $user->name = $request->input('name');
+        $user->last_name = $request->input('last_name');
         $user->email = $request->input('email');
-        $user->password = $request->input('password');
+        $user->password = Hash::make($request->input('password'));
         $user->pseudo = $request->input('pseudo');
         $user->save();
 
-        $token = $user->createToken("teste");
 
+        $token = $user->createToken("teste");
         return [
             'token' => $token->plainTextToken,
             'user' => $user
         ];
+
     }
 
     public function login (Request $request){
