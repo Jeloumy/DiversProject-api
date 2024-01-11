@@ -4,8 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Team;
 use App\Models\User;
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Intervention\Image\Facades\Image;
 
 class TeamController extends Controller
 {
@@ -26,11 +27,16 @@ class TeamController extends Controller
         $data = $request->validate([
             'name' => 'required|string',
             'description' => 'nullable|string',
-            'logo' => 'required|string',
+            'logo' => 'required|file|mimes:jpeg,png,jpg,gif,svg,pdf|max:2048',
         ]);
 
         $team = Team::create($data);
         $team->captain_id = auth()->user()->id;
+
+        if ($request->hasFile('logo')) {
+            $logo = $request->file('logo');
+            $team = self::storeImage($logo, $team);
+        }
         $team->save();
         return $team;
     }
@@ -48,7 +54,6 @@ class TeamController extends Controller
      */
     public function update(Request $request, Team $team)
     {
-
         if ($team->captain_id !== auth()->user()->id) {
             return response()->json(['message' => 'Vous n\'êtes pas le capitaine de l\'équipe.'], 403);
         }
@@ -56,13 +61,20 @@ class TeamController extends Controller
         $data = $request->validate([
             'name' => 'string',
             'description' => 'string',
-            'logo' => 'string',
+            'logo' => 'file|mimes:jpeg,png,jpg,gif,svg,pdf|max:2048', // Modifier la validation pour accepter un fichier
         ]);
 
+        if ($request->hasFile('logo')) {
+            $logo = $request->file('logo');
+            $team = self::storeImage($logo, $team); // Utiliser storeImage pour traiter et stocker le fichier
+        }
+
+        // Mettre à jour les autres données
         $team->update($data);
 
         return $team;
     }
+
 
     /**
      * Remove the specified resource from storage.
@@ -114,5 +126,33 @@ class TeamController extends Controller
         $team->save();
 
         return response()->json(['message' => 'Le nouveau capitaine a été défini avec succès.']);
+    }
+
+    static function storeImage($file, $team) {
+        $extension = $file->getClientOriginalExtension();
+        $basePath = 'team/' . time() . '-' . $team->id;
+
+        if (in_array($extension, ['jpeg', 'png', 'jpg', 'gif', 'svg'])) {
+            // Traitement pour les images
+            $resizedImage = Image::make($file)
+                ->resize(256, null, function ($constraint) {
+                    $constraint->aspectRatio();
+                })
+                ->crop(256, 256);
+
+            $path = $basePath . '.' . $extension;
+            Storage::disk('public')->put($path, (string) $resizedImage->encode());
+        } else if ($extension == 'pdf') {
+            // Traitement pour les PDF
+            $path = $basePath . '.' . $extension;
+            Storage::disk('public')->putFileAs('team/', $file, $path);
+        } else {
+            // Gestion des types de fichiers non pris en charge
+            throw new \Exception("Type de fichier non pris en charge.");
+        }
+
+        $team->logo = $path;
+
+        return $team;
     }
 }

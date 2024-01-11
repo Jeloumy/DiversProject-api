@@ -27,7 +27,7 @@ class JeuController extends Controller
     {
         $data = $request->validate([
             'name' => 'required|string',
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg,pdf|max:2048',
         ]);
 
         $jeu = Jeu::create($data);
@@ -81,18 +81,27 @@ class JeuController extends Controller
         ]);
     }
 
-    static function storeImage($image, $jeu){
-        $resizedImage = Image::make($image)
-            ->resize(256, null, function($constraint){
-                $constraint->aspectRatio();
-            })
-            ->crop(256,256);
+    static function storeImage($image, $jeu) {
+        $extension = $image->getClientOriginalExtension();
+        $path = 'jeu/' . time() . '-' . $jeu->id . '.' . $extension;
 
-        $path ='jeu/' . time(). '-' . $jeu->id . '.' . $image->getClientOriginalExtension();
-        Storage::disk('public')->put($path, (string) $resizedImage->encode());
+        if (in_array($extension, ['jpeg', 'png', 'jpg', 'gif', 'svg'])) {
+            // Traitement pour les images
+            $resizedImage = Image::make($image)
+                ->resize(256, null, function ($constraint) {
+                    $constraint->aspectRatio();
+                })
+                ->crop(256, 256);
+            Storage::disk('public')->put($path, (string) $resizedImage->encode());
+        } else if ($extension == 'pdf') {
+            // Traitement pour les PDF
+            Storage::disk('public')->putFileAs('jeu/', $image, $path);
+        } else {
+            // Gestion des types de fichiers non pris en charge
+            throw new \Exception("Type de fichier non pris en charge.");
+        }
 
         $jeu->image = $path;
-
         return $jeu;
     }
 
