@@ -3,8 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Jeu;
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Intervention\Image\Facades\Image;
+
+
 
 class JeuController extends Controller
 {
@@ -24,10 +27,16 @@ class JeuController extends Controller
     {
         $data = $request->validate([
             'name' => 'required|string',
-            'image' => 'required|string',
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg,pdf|max:2048',
         ]);
 
         $jeu = Jeu::create($data);
+
+
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $jeu = self::storeImage($image, $jeu);
+        }
         $jeu->save();
         return $jeu;
     }
@@ -38,6 +47,11 @@ class JeuController extends Controller
     public function show(Jeu $jeu)
     {
         return $jeu;
+    }
+
+    public function __construct()
+    {
+        $this->middleware('admin')->only('store');
     }
 
     /**
@@ -66,4 +80,29 @@ class JeuController extends Controller
             'message'=>"Jeu supprimé"
         ]);
     }
+
+    static function storeImage($image, $jeu) {
+        $extension = $image->getClientOriginalExtension();
+        $path = 'jeu/' . time() . '-' . $jeu->id . '.' . $extension;
+
+        if (in_array($extension, ['jpeg', 'png', 'jpg', 'gif', 'svg'])) {
+            // Traitement pour les images
+            $resizedImage = Image::make($image)
+                ->resize(256, null, function ($constraint) {
+                    $constraint->aspectRatio();
+                })
+                ->crop(256, 256);
+            Storage::disk('public')->put($path, (string) $resizedImage->encode());
+        } else if ($extension == 'pdf') {
+            // Traitement pour les PDF
+            Storage::disk('public')->putFileAs('jeu/', $image, $path);
+        } else {
+            // Gestion des types de fichiers non pris en charge
+            throw new \Exception("Type de fichier non pris en charge.");
+        }
+
+        $jeu->image = $path;
+        return $jeu;
+    }
+
 }
