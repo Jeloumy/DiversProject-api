@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Tournoi extends Model
 {
@@ -18,16 +20,16 @@ class Tournoi extends Model
         'jeu_id'
     ];
 
-    public function jeu()
+    public function jeu(): belongsTo
     {
         return $this->belongsTo(Jeu::class);
     }
-    public function team()
+    public function team() : belongsToMany
     {
         return $this->belongsToMany(Team::class);
     }
 
-    public function user()
+    public function user() : belongsTo
     {
         return $this->belongsTo(User::class);
     }

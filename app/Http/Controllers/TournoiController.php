@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Tournoi;
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
 class TournoiController extends Controller
@@ -23,7 +22,7 @@ class TournoiController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'name' => 'required|string',
+            'name' => 'required|string|unique:tournois',
             'description' => 'nullable|string',
             'begin_date' => 'required|date',
             'end_date' => 'required|date',
@@ -50,8 +49,12 @@ class TournoiController extends Controller
      */
     public function update(Request $request, Tournoi $tournoi)
     {
+        if ($tournoi->user_id !== auth()->id()) {
+            return response()->json(['message' => 'Vous n\'êtes pas le propriétaire de ce tournoi.'], 403);
+        }
+
         $data = $request->validate([
-            'name' => 'string',
+            'name' => 'string|unique:tournois,name,' . $tournoi->id,
             'description' => 'string',
             'begin_date' => 'date',
             'end_date' => 'date',

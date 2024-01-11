@@ -2,10 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
-use http\Env\Response;
-use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
@@ -18,7 +16,9 @@ class AuthController extends Controller
         $request->validate(
             [
                 'name' => 'string | required',
+                'last_name' => 'string|required',
                 'email' => 'email | required|unique:users,email',
+                'pseudo' => 'required|string|unique:users',
                 'password' => [
                     'required',
                     'string',
@@ -33,25 +33,29 @@ class AuthController extends Controller
 
         $user = new User;
         $user->name = $request->input('name');
+        $user->last_name = $request->input('last_name');
         $user->email = $request->input('email');
-        $user->password = $request->input('password');
+        $user->password = Hash::make($request->input('password'));
+        $user->pseudo = $request->input('pseudo');
         $user->save();
 
-        $token = $user->createToken("teste");
 
+        $token = $user->createToken("teste");
         return [
             'token' => $token->plainTextToken,
             'user' => $user
         ];
+
     }
 
     public function login (Request $request){
         $request->validate([
-            'email'=>'required|email',
+            'identifier'=>'required',
             'password' =>'string|required'
         ]);
 
-        $user = User::where('email', $request->input('email'))
+        $user = User::where('email', $request->input('identifier'))
+            ->orWhere('pseudo', $request->input('identifier'))
             ->first();
 
         if($user && Hash::check($request->input('password'), $user->password)){
