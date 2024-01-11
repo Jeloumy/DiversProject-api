@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SocialiteController;
+use App\Http\Controllers\EmailController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -46,3 +47,5 @@ Route::get("redirect/{provider}", [SocialiteController::class,'redirect'])->name
 
 // Le callback du provider
 Route::get("callback/{provider}", [SocialiteController::class,'callback'])->name('socialite.redirect');
+
+

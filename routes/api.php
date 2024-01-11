@@ -7,6 +7,7 @@ use App\Http\Controllers\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful;
+use App\Http\Controllers\EmailController;
 
 
 /*
@@ -98,3 +99,9 @@ Route::group(['middleware'=>'auth:sanctum', 'prefix'=> "jeu"],function () {
     Route::put('/{jeu}', [JeuController::class, 'update']);
     Route::delete('/{jeu}', [JeuController::class, 'destroy']);
 });
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////route email ///////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Route::get('/envoyer-email', [EmailController::class, 'envoyerEmail']);
