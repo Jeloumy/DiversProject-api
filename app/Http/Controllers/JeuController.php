@@ -49,6 +49,11 @@ class JeuController extends Controller
         return $jeu;
     }
 
+    public function __construct()
+    {
+        $this->middleware('admin')->only('store');
+    }
+
     /**
      * Update the specified resource in storage.
      */
