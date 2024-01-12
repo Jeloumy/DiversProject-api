@@ -44,6 +44,7 @@ class TournoiController extends Controller
         return $tournoi;
     }
 
+
     /**
      * Update the specified resource in storage.
      */
