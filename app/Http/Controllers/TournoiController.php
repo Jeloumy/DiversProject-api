@@ -27,14 +27,14 @@ class TournoiController extends Controller
             'begin_date' => 'required|date',
             'end_date' => 'required|date',
             'jeu_id' => 'required|exists:jeux,id',
+            'stream_url' => 'nullable|url',
         ]);
 
         $data['user_id'] = auth()->id();
-
         $tournoi = Tournoi::create($data);
-
         return $tournoi;
     }
+
 
     /**
      * Display the specified resource.
@@ -43,6 +43,7 @@ class TournoiController extends Controller
     {
         return $tournoi;
     }
+
 
     /**
      * Update the specified resource in storage.
@@ -59,10 +60,10 @@ class TournoiController extends Controller
             'begin_date' => 'date',
             'end_date' => 'date',
             'jeu_id' => 'exists:jeux,id',
+            'stream_url' => 'nullable|url',
         ]);
 
         $tournoi->update($data);
-
         return $tournoi;
     }
 
