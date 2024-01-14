@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Team;
+use App\Models\Tournoi;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -38,6 +39,9 @@ class TeamController extends Controller
             $team = self::storeImage($logo, $team);
         }
         $team->save();
+        $user = auth()->user();
+        $user->team_id = $team->id;
+        $user->save();
         return $team;
     }
 
@@ -59,10 +63,11 @@ class TeamController extends Controller
         }
 
         $data = $request->validate([
-            'name' => 'string',
-            'description' => 'string',
-            'logo' => 'file|mimes:jpeg,png,jpg,gif,svg,pdf|max:2048', // Modifier la validation pour accepter un fichier
+            'name' => 'sometimes|string',
+            'description' => 'sometimes|string',
+            'logo' => 'sometimes|file|mimes:jpeg,png,jpg,gif,svg,pdf|max:2048',
         ]);
+
 
         if ($request->hasFile('logo')) {
             $logo = $request->file('logo');
@@ -91,20 +96,24 @@ class TeamController extends Controller
     public function addUser(Request $request, Team $team)
     {
         $request->validate([
-            'user_id' => 'required|integer|exists:users,id',
+            'pseudo' => 'required|string|exists:users,pseudo',
         ]);
 
-        $user = User::find($request->input('user_id'));
+        if (auth()->user()->id !== $team->captain_id) {
+            return response()->json(['message' => 'Seul le capitaine peut ajouter des membres à l\'équipe'], 403);
+        }
+
+        $user = User::where('pseudo', $request->input('pseudo'))->first();
 
         if ($user) {
             $user->team_id = $team->id;
             $user->save();
-
             return response()->json(['message' => 'Utilisateur ajouté à l\'équipe avec succès'], 200);
         } else {
             return response()->json(['message' => 'Utilisateur non trouvé'], 404);
         }
     }
+
 
     public function setCaptain(Request $request, Team $team, User $newCaptain)
     {
@@ -155,4 +164,35 @@ class TeamController extends Controller
 
         return $team;
     }
-}
+
+    public function getTeamByUserId($userId)
+    {
+        $team = Team::with(['users' => function ($query) {
+            $query->select('id', 'pseudo', 'team_id');
+        }, 'tournoi'])->whereHas('users', function ($query) use ($userId) {
+            $query->where('id', $userId);
+        })->first(['id', 'name', 'description', 'captain_id']);
+
+        if ($team) {
+            return response()->json($team);
+        } else {
+            return response()->json(['message' => 'Aucune équipe trouvée pour cet utilisateur'], 404);
+        }
+    }
+    public function getTournamentsByTeam($teamId)
+    {
+        $tournois = Tournoi::with('teams')->whereHas('teams', function ($query) use ($teamId) {
+            $query->where('team_id', $teamId);
+        })->get();
+
+        return response()->json($tournois);
+    }
+
+    public function getTeamMembers(Team $team)
+    {
+        $members = $team->users()->select('id', 'name', 'pseudo')->get();
+
+        return response()->json($members);
+
+    }
+    }

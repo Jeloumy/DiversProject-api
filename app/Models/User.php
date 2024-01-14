@@ -25,6 +25,7 @@ class User extends Authenticatable
         'password',
         'pseudo',
         'admin',
+        'team_id',
     ];
 
     protected $attributes = [
@@ -50,6 +51,7 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password'=>'hashed'
     ];
+
 
 
     public function team(): BelongsTo

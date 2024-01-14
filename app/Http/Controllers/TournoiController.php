@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Tournoi;
 use Illuminate\Http\Request;
+use App\Models\Team;
 
 class TournoiController extends Controller
 {
@@ -91,5 +92,51 @@ class TournoiController extends Controller
 
         return response()->json($results);
     }
+
+    public function addTeamToTournament(Request $request, $tournoiId)
+    {
+        // Vérifier que l'équipe existe
+        $teamId = $request->input('team_id');
+        $team = Team::find($teamId);
+        if (!$team) {
+            return response()->json(['message' => 'Équipe non trouvée'], 404);
+        }
+
+        // Vérifier que le tournoi existe
+        $tournoi = Tournoi::find($tournoiId);
+        if (!$tournoi) {
+            return response()->json(['message' => 'Tournoi non trouvé'], 404);
+        }
+
+        // Vérifier que l'utilisateur actuel est le capitaine de l'équipe
+        if ($team->captain_id !== auth()->user()->id) {
+            return response()->json(['message' => 'Seul le capitaine de l\'équipe peut s\'inscrire au tournoi.'], 403);
+        }
+
+        // Ajouter l'équipe au tournoi
+        $tournoi->teams()->attach($teamId);
+
+        return response()->json(['message' => 'Équipe ajoutée au tournoi avec succès']);
+    }
+
+    public function leaveTournament(Request $request, $tournoiId)
+    {
+        // Vérifier que le tournoi existe
+        $tournoi = Tournoi::find($tournoiId);
+        if (!$tournoi) {
+            return response()->json(['message' => 'Tournoi non trouvé'], 404);
+        }
+
+        // Vérifier que l'utilisateur actuel est le capitaine de l'équipe
+        if ($tournoi->captain_id !== auth()->user()->id) {
+            return response()->json(['message' => 'Seul le capitaine de l\'équipe peut se désinscrire du tournoi.'], 403);
+        }
+
+        // Retirer l'équipe du tournoi
+        $tournoi->teams()->detach(auth()->user()->team->id);
+
+        return response()->json(['message' => 'Équipe retirée du tournoi avec succès']);
+    }
+
 
 }

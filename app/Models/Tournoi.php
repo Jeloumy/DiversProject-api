@@ -25,10 +25,12 @@ class Tournoi extends Model
     {
         return $this->belongsTo(Jeu::class);
     }
-    public function team() : belongsToMany
+    public function teams(): BelongsToMany
     {
+
         return $this->belongsToMany(Team::class);
     }
+
 
     public function user() : belongsTo
     {

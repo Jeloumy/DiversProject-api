@@ -24,12 +24,12 @@ class Team extends Model
 
 
 
-    public function users() : hasMany
+    public function users(): HasMany
     {
         return $this->hasMany(User::class);
     }
 
-    public function tournoi() : belongsToMany
+    public function tournoi(): BelongsToMany
     {
         return $this->belongsToMany(Tournoi::class);
     }
