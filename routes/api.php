@@ -74,6 +74,10 @@ Route::group(['middleware'=>'auth:sanctum', 'prefix'=> "tournoi"],function () {
     Route::post('/{tournoiId}/register-team', [TournoiController::class, 'addTeamToTournament']);
     Route::get('search/{searchQuery}', [TournoiController::class, 'search']);
     Route::post('/{tournoiId}/leave-tournament', [TournoiController::class, 'leaveTournament']);
+    Route::get('/carrousel', [TournoiController::class, 'getTournoisCarrousel']);
+    Route::get('/recommandes', [TournoiController::class, 'getTournoisRecommandes']);
+    Route::get('/rechercheParJeu/{jeuId}', [TournoiController::class, 'rechercherParJeu']);
+
 });
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

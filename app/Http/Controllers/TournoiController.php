@@ -138,5 +138,23 @@ class TournoiController extends Controller
         return response()->json(['message' => 'Équipe retirée du tournoi avec succès']);
     }
 
+    public function getTournoisCarrousel()
+    {
+        $tournoisCarrousel = Tournoi::orderBy('created_at', 'desc')->take(5)->get(); // par exemple
+        return response()->json($tournoisCarrousel);
+    }
+
+    public function getTournoisRecommandes()
+    {
+        $tournoisRecommandes = Tournoi::where('recommande', true)->get(); // Hypothétique champ 'recommande'
+        return response()->json($tournoisRecommandes);
+    }
+
+    public function rechercherParJeu($jeuId)
+    {
+        $tournois = Tournoi::where('jeu_id', $jeuId)->get();
+        return response()->json($tournois);
+    }
+
 
 }
