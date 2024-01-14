@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Casts\RelativeUrlCast;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -18,16 +19,17 @@ class Team extends Model
     ];
 
     protected $casts = [
-       // 'logo' => 'boolean',
+        'logo' => RelativeUrlCast::class,
     ];
 
 
-    public function users() : hasMany
+
+    public function users(): HasMany
     {
         return $this->hasMany(User::class);
     }
 
-    public function tournoi() : belongsToMany
+    public function tournoi(): BelongsToMany
     {
         return $this->belongsToMany(Tournoi::class);
     }

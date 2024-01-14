@@ -20,9 +20,16 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
+        'last_name',
         'email',
         'password',
         'pseudo',
+        'admin',
+        'team_id',
+    ];
+
+    protected $attributes = [
+        'admin' => false,
     ];
 
     /**
@@ -44,6 +51,7 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password'=>'hashed'
     ];
+
 
 
     public function team(): BelongsTo

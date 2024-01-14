@@ -7,6 +7,7 @@ use App\Http\Controllers\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful;
+use App\Http\Controllers\EmailController;
 
 
 /*
@@ -38,6 +39,8 @@ Route::group(['prefix'=>'blog'], function (){
 ///////////////////////////////////////route authentification //////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+Route::middleware('auth:sanctum')->get('/auth/check-admin', [AuthController::class, 'checkAdminStatus']);
+
 Route::post('/register', [AuthController::class, 'register']);
 
 Route::group(['prefix'=>'auth'], function (){
@@ -68,7 +71,13 @@ Route::group(['middleware'=>'auth:sanctum', 'prefix'=> "tournoi"],function () {
     Route::get('/{tournoi}', [TournoiController::class, 'show']);
     Route::put('/{tournoi}', [TournoiController::class, 'update']);
     Route::delete('/{tournoi}', [TournoiController::class, 'destroy']);
+    Route::post('/{tournoiId}/register-team', [TournoiController::class, 'addTeamToTournament']);
     Route::get('search/{searchQuery}', [TournoiController::class, 'search']);
+    Route::post('/{tournoiId}/leave-tournament', [TournoiController::class, 'leaveTournament']);
+    Route::get('/carrousel', [TournoiController::class, 'getTournoisCarrousel']);
+    Route::get('/recommandes', [TournoiController::class, 'getTournoisRecommandes']);
+    Route::get('/rechercheParJeu/{jeuId}', [TournoiController::class, 'rechercherParJeu']);
+
 });
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -84,6 +93,9 @@ Route::group(['middleware'=>'auth:sanctum', 'prefix'=> "team"],function () {
     Route::delete('/{team}', [TeamController::class, 'destroy']);
     Route::post('/{team}/add-user', [TeamController::class, 'addUser']);
     Route::put('/{team}/set-captain', [TeamController::class, 'setCaptain']);
+    Route::get('/team/user/{userId}', [TeamController::class, 'getTeamByUserId']);
+    Route::get('/{teamId}/tournois', [TeamController::class, 'getTournamentsByTeam']);
+    Route::get('/{team}/members', [TeamController::class, 'getTeamMembers']);
 });
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -98,3 +110,9 @@ Route::group(['middleware'=>'auth:sanctum', 'prefix'=> "jeu"],function () {
     Route::put('/{jeu}', [JeuController::class, 'update']);
     Route::delete('/{jeu}', [JeuController::class, 'destroy']);
 });
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////route email ///////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Route::get('/envoyer-email', [EmailController::class, 'envoyerEmail']);
